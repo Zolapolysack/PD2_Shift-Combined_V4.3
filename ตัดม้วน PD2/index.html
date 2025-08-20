@@ -482,6 +482,11 @@
                 ล้างข้อมูลชั่วคราว
             </button>
             
+            <button onclick="resetToSingleDataSet()" class="btn-glow btn-red text-white px-6 py-3 rounded-lg font-normal text-base flex items-center">
+                <i class="bi bi-arrow-repeat w-5 h-5 mr-2" aria-hidden="true" style="font-size:1.05rem"></i>
+                รีเซ็ตการบันทึกข้อมูล
+            </button>
+            
             <button onclick="showSystemHealth()" class="btn-glow btn-ais-info px-6 py-3 rounded-lg font-normal text-base flex items-center">
                 <i class="bi bi-heart-pulse w-5 h-5 mr-2" aria-hidden="true" style="font-size:1.05rem"></i>
                 ตรวจสอบระบบ
@@ -1739,6 +1744,41 @@
             } catch (error) {
                 console.error('❌ ไม่สามารถล้างข้อมูลได้:', error);
                 showNotification('ไม่สามารถล้างข้อมูลได้', 'error');
+            }
+        }
+
+        // Reset all data sets to a single fresh set
+        function resetToSingleDataSet() {
+            try {
+                const ok = confirm('ยืนยันการรีเซ็ตการบันทึกข้อมูล ให้เริ่มใหม่ด้วย 1 ชุดข้อมูลหรือไม่?');
+                if (!ok) return;
+
+                // Clear stored data for this module
+                localStorage.removeItem('productionData');
+                localStorage.removeItem('pendingSubmission');
+
+                // Rebuild DOM with only one fresh data set
+                const container = document.getElementById('dataContainer');
+                if (!container) throw new Error('ไม่พบ dataContainer');
+                container.innerHTML = '';
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = generateDataSet(1);
+                container.appendChild(wrapper.firstElementChild);
+
+                // Reset counters and UI
+                dataSetCount = 1;
+                updateDataSetCount();
+                setupSelectHandlers();
+
+                // Persist the fresh state
+                saveToLocalStorage();
+
+                // UX
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                showNotification('รีเซ็ตสำเร็จ เหลือ 1 ชุดข้อมูล', 'success');
+            } catch (error) {
+                console.error('❌ ไม่สามารถรีเซ็ตชุดข้อมูลได้:', error);
+                showNotification('ไม่สามารถรีเซ็ตชุดข้อมูลได้', 'error');
             }
         }
 
