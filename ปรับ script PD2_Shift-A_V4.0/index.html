@@ -613,8 +613,8 @@
             "CL53","CL54","CL55","CL56","CL57","CL58","CL59","CL60","CL61","CL62","CL63",
             "CL64","CL65","CL66","CL67","CL68","CL69","CL70","CL71","CL72","CL73","CL74",
             "CL75","CL76","CL77","CL78","CL79","CL80","CL81","CL82","CL83","CL84","CL85",
-            "CL86","CL87","CL88","CL89","CL90","CL91","CL92","CL93","CL94","CL95","CL91",
-            "CL90","CL34","CL35","CL36"
+            "CL86","CL87","CL88","CL89","CL90","CL91","CL92","CL93","CL94","CL95",
+            "CL34","CL35","CL36"
         ];
 
         const employees = [
@@ -655,30 +655,30 @@
         ];
 
         const fabricSizes= [
-"1425800",
-"1725800",
-"1825800SM",
-"1921720",
-"1925800",
-"1925800SM",
-"2021720UV",
-"2021850UV",
-"2025800",
-"2025800SM",
-"2025800SMN",
-"2025850",
-"2121670SM",
-"2125650",
-"2125800",
-"2325650",
-"2625650",
-"262575051",
-"2625800",
-"2625850SM",
-"2825850",
-"scl052325650",
-"test2025800",
-"2321112512551"
+            "1425800",
+            "1725800",
+            "1825800SM",
+            "1921720",
+            "1925800",
+            "1925800SM",
+            "2021720UV",
+            "2021850UV",
+            "2025800",
+            "2025800SM",
+            "2025800SMN",
+            "2025850",
+            "2121670SM",
+            "2125650",
+            "2125800",
+            "2325650",
+            "2625650",
+            "262575051",
+            "2625800",
+            "2625850SM",
+            "2825850",
+            "scl052325650",
+            "test2025800",
+            "2321112512551"
         ];
 
         // API Configuration - ปรับปรุงให้รองรับการเปลี่ยนแปลง
@@ -1322,19 +1322,26 @@
                 
                 if (id && name) {
                     newValue = id;
-                    employees.push({ id: id, name: name });
+                    // de-duplicate by id
+                    if (!employees.some(e => e.id === id)) {
+                        employees.push({ id: id, name: name });
+                    }
                     isValid = true;
                 }
             } else if (type === 'machine') {
                 newValue = document.getElementById('newMachine').value.trim();
                 if (newValue) {
-                    machines.push(newValue);
+                    if (!machines.includes(newValue)) {
+                        machines.push(newValue);
+                    }
                     isValid = true;
                 }
             } else if (type === 'fabric') {
                 newValue = document.getElementById('newFabricSize').value.trim();
                 if (newValue) {
-                    fabricSizes.push(newValue);
+                    if (!fabricSizes.includes(newValue)) {
+                        fabricSizes.push(newValue);
+                    }
                     isValid = true;
                 }
             }
@@ -1627,9 +1634,8 @@
                     timestamp: new Date().toISOString(),
                     dataSetCount: dataSetCount,
                     data: allData,
-                    customMachines: machines.slice(75), // Only custom additions
-                    customEmployees: employees.slice(34), // Only custom additions
-                    customFabricSizes: fabricSizes.slice(22), // Only custom additions
+                    // ไม่บันทึกรายการที่เพิ่มใหม่ เพื่อให้เป็นแบบชั่วคราวต่อ session เท่านั้น
+                    // custom lists removed by request
                     systemHealth: {
                         saveTime: saveStartTime,
                         errorCount: SYSTEM_HEALTH.performanceMetrics.errorCount,
@@ -1729,16 +1735,7 @@
                 
                 const storageData = JSON.parse(stored);
                 
-                // Restore custom data
-                if (storageData.customMachines) {
-                    machines.push(...storageData.customMachines);
-                }
-                if (storageData.customEmployees) {
-                    employees.push(...storageData.customEmployees);
-                }
-                if (storageData.customFabricSizes) {
-                    fabricSizes.push(...storageData.customFabricSizes);
-                }
+                // ไม่กู้คืนรายการที่เพิ่มใหม่ เพื่อกันข้อมูลซ้อนทับและให้หายไปเมื่อรีเฟรช
                 
                 // Clear existing data sets
                 document.getElementById('dataContainer').innerHTML = '';
