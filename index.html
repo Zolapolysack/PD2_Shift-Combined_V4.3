@@ -179,9 +179,9 @@
   <!-- Workbench / Iframe -->
   <section id="workbench" class="mx-4 mt-4 mb-6">
     <div class="glass rounded-2xl p-2 ring-1 ring-white/10">
-      <div class="frame-wrap rounded-xl overflow-hidden bg-white/90 shadow-lg ring-1 ring-black/5">
-        <!-- Note: This file is placed as a sibling folder of A/B. Adjust relative paths if moved. -->
-  <iframe id="shiftFrame" title="Shift Frame" src="./ปรับ script PD2_Shift-A_V4.0/index.html" class="w-full h-full border-0" loading="eager"></iframe>
+  <div class="frame-wrap rounded-xl overflow-hidden bg-white/90 shadow-lg ring-1 ring-black/5">
+    <!-- Note: This file is placed as a sibling folder of A/B. Adjust relative paths if moved. -->
+  <iframe id="shiftFrame" title="Shift Frame" src="./ปรับ script PD2_Shift-A_V4.0/index.html?v=20250821" class="w-full h-full border-0" loading="eager"></iframe>
       </div>
     </div>
   </section>
@@ -207,6 +207,9 @@
       const frame = document.getElementById('shiftFrame');
   // Hero buttons removed per request
       const toast = document.getElementById('toast');
+  // Simple cache-busting token so GH Pages picks up latest subpages
+  const CACHE_VER = '20250821';
+  const withVer = (p) => `${p}${p.includes('?') ? '&' : '?'}v=${CACHE_VER}`;
 
       // group for shared effects/helpers
       const pills = [btnA, btnB, btnCut].filter(Boolean);
@@ -235,7 +238,7 @@
 
   btnA.addEventListener('click', () => {
         if (!btnA.classList.contains('active')) {
-          frame.src = './ปรับ script PD2_Shift-A_V4.0/index.html';
+          frame.src = withVer('./ปรับ script PD2_Shift-A_V4.0/index.html');
           setActive(btnA);
         }
         document.getElementById('workbench')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -244,7 +247,7 @@
 
       btnB.addEventListener('click', () => {
         if (!btnB.classList.contains('active')) {
-          frame.src = './ปรับ script PD2_Shift-B_V4.0/index.html';
+          frame.src = withVer('./ปรับ script PD2_Shift-B_V4.0/index.html');
           setActive(btnB);
         }
         document.getElementById('workbench')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -254,7 +257,7 @@
       if (btnCut) {
         btnCut.addEventListener('click', () => {
           if (!btnCut.classList.contains('active')) {
-            frame.src = './ตัดม้วน PD2/index.html';
+            frame.src = withVer('./ตัดม้วน PD2/index.html');
             setActive(btnCut);
           }
           document.getElementById('workbench')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -268,11 +271,11 @@
       // Deep-link support: .../index.html#shift=B -> open B initially
       const hash = (location.hash || '').toLowerCase();
       if (hash.includes('shift=b')) {
-        frame.src = './ปรับ script PD2_Shift-B_V4.0/index.html';
+        frame.src = withVer('./ปรับ script PD2_Shift-B_V4.0/index.html');
         setActive(btnB);
         showToast('\u0e40\u0e1b\u0e34\u0e14\u0e40\u0e23\u0e34\u0e48\u0e21\u0e15\u0e49\u0e19\u0e17\u0e35\u0e48\u0e01\u0e30 B');
       } else if (hash.includes('shift=cut') || hash === '#cut' || hash.includes('module=cut')) {
-        frame.src = './ตัดม้วน PD2/index.html';
+        frame.src = withVer('./ตัดม้วน PD2/index.html');
         setActive(btnCut);
         showToast('เปิดหน้าตัดม้วน PD2');
       }
@@ -292,4 +295,3 @@
   </script>
 </body>
 </html>
-
